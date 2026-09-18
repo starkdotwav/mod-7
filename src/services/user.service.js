@@ -8,11 +8,14 @@ export const getAllUsers = async () => {
   return users;
 };
 
-export const searchUsers = async (nombre) => {
+export const searchUsers = async (nombre = '') => {
+  const term = nombre.trim();
+  const where = term
+    ? { nombre: { [Op.iLike]: `%${term}%` } }
+    : {};
+
   const users = await User.findAll({
-    where: {
-      nombre: { [Op.iLike]: `%${nombre}%` }
-    },
+    where,
     attributes: { exclude: ['password'] }
   });
   return users;
@@ -23,7 +26,9 @@ export const getUserById = async (id) => {
     attributes: { exclude: ['password'] }
   });
   if (!user) {
-    throw new Error('Usuario no encontrado');
+    const error = new Error('Usuario no encontrado');
+    error.status = 404;
+    throw error;
   }
   return user;
 };
@@ -33,7 +38,9 @@ export const createUser = async (userData) => User.create(userData);
 export const updateUser = async (id, userData) => {
   const user = await User.findByPk(id);
   if (!user) {
-    throw new Error('Usuario no encontrado');
+    const error = new Error('Usuario no encontrado');
+    error.status = 404;
+    throw error;
   }
   await user.update(userData);
   return user;
@@ -42,7 +49,9 @@ export const updateUser = async (id, userData) => {
 export const deleteUser = async (id) => {
   const user = await User.findByPk(id);
   if (!user) {
-    throw new Error('Usuario no encontrado');
+    const error = new Error('Usuario no encontrado');
+    error.status = 404;
+    throw error;
   }
   await user.destroy();
   return { message: 'Usuario eliminado correctamente' };
@@ -54,7 +63,9 @@ export const getUserWithOrders = async (id) => {
     attributes: { exclude: ['password'] }
   });
   if (!user) {
-    throw new Error('Usuario no encontrado');
+    const error = new Error('Usuario no encontrado');
+    error.status = 404;
+    throw error;
   }
   return user;
 };

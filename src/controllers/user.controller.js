@@ -41,10 +41,13 @@ export const createUser = async (req, res, next) => {
     }
 
     const user = await userService.createUser({ nombre, email, password });
+    const safeUser = user.toJSON ? user.toJSON() : { ...user };
+    delete safeUser.password;
+
     res.status(201).json({
       status: 'success',
       message: 'Usuario creado correctamente',
-      data: { user }
+      data: { user: safeUser }
     });
   } catch (error) {
     next(error);
@@ -66,10 +69,13 @@ export const updateUser = async (req, res, next) => {
     }
 
     const user = await userService.updateUser(req.params.id, updateData);
+    const safeUser = user.toJSON ? user.toJSON() : { ...user };
+    delete safeUser.password;
+
     res.json({
       status: 'success',
       message: 'Usuario actualizado correctamente',
-      data: { user }
+      data: { user: safeUser }
     });
   } catch (error) {
     next(error);
@@ -119,10 +125,16 @@ export const createUserWithOrder = async (req, res, next) => {
     }
 
     const result = await userService.createUserWithOrder(userData, orderData);
+    const safeUser = result.user.toJSON ? result.user.toJSON() : { ...result.user };
+    delete safeUser.password;
+
     res.status(201).json({
       status: 'success',
       message: 'Usuario y orden creados correctamente con transacción',
-      data: result
+      data: {
+        user: safeUser,
+        order: result.order
+      }
     });
   } catch (error) {
     next(error);

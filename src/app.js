@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoutes from './routes/user.routes.js';
 import sequelize from './config/database.js';
 import errorMiddleware from './middlewares/error.middleware.js';
+import notFoundMiddleware from './middlewares/notFound.middleware.js';
 
 const app = express();
 
@@ -22,11 +23,12 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 sequelize
   .authenticate()
-  .then(() => console.log('Conexió´´´n a base de datos establecida correctamente.'))
+  .then(() => console.log('Conexión a base de datos establecida correctamente.'))
   .catch(err => console.error('Error al conectar con la base de datos:', err));
 
 export default app;
