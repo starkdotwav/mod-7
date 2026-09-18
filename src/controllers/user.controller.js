@@ -2,7 +2,11 @@ import * as userService from '../services/user.service.js';
 
 export const getUsers = async (req, res, next) => {
   try {
-    const users = await userService.getAllUsers();
+    const { nombre } = req.query;
+    const users = nombre
+      ? await userService.searchUsers(nombre)
+      : await userService.getAllUsers();
+
     res.json({
       status: 'success',
       message: 'Usuarios obtenidos correctamente',
@@ -28,7 +32,15 @@ export const getUser = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const user = await userService.createUser(req.body);
+    const { nombre, email, password } = req.body;
+
+    if (!nombre || !email || !password) {
+      const error = new Error('Nombre, email y password son requeridos');
+      error.status = 400;
+      throw error;
+    }
+
+    const user = await userService.createUser({ nombre, email, password });
     res.status(201).json({
       status: 'success',
       message: 'Usuario creado correctamente',
@@ -41,7 +53,19 @@ export const createUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const user = await userService.updateUser(req.params.id, req.body);
+    const { nombre, email } = req.body;
+    const updateData = {};
+
+    if (nombre) updateData.nombre = nombre;
+    if (email) updateData.email = email;
+
+    if (Object.keys(updateData).length === 0) {
+      const error = new Error('Debes enviar nombre o email para actualizar');
+      error.status = 400;
+      throw error;
+    }
+
+    const user = await userService.updateUser(req.params.id, updateData);
     res.json({
       status: 'success',
       message: 'Usuario actualizado correctamente',
@@ -81,10 +105,23 @@ export const getUserWithOrders = async (req, res, next) => {
 export const createUserWithOrder = async (req, res, next) => {
   try {
     const { userData, orderData } = req.body;
+
+    if (!userData?.nombre || !userData?.email || !userData?.password) {
+      const error = new Error('Datos de usuario incompletos');
+      error.status = 400;
+      throw error;
+    }
+
+    if (!orderData?.producto || !orderData?.cantidad || !orderData?.total) {
+      const error = new Error('Datos de orden incompletos');
+      error.status = 400;
+      throw error;
+    }
+
     const result = await userService.createUserWithOrder(userData, orderData);
     res.status(201).json({
       status: 'success',
-      message: 'Usuario y orden creados correctamente con transacció´´´n',
+      message: 'Usuario y orden creados correctamente con transacción',
       data: result
     });
   } catch (error) {

@@ -1,13 +1,13 @@
 # Módulo 7 - Node.js + Express + Sequelize
 
-Proyecto de backend para gestión de usuarios y órdenes con PostgreSQL y Sequelize.
+Backend para la gestión de usuarios y órdenes con PostgreSQL y Sequelize.
 
 ## Requisitos
 
-- Node.js v18 o superior
-- PostgreSQL instalado y corriendo
+- Node.js 18 o superior
+- PostgreSQL instalado y en ejecución
 
-## Instalació´´´n
+## Instalación
 
 ```bash
 git clone https://github.com/starkdotwav/mod-7.git
@@ -15,68 +15,67 @@ cd mod-7
 npm install
 ```
 
-## Configuració´´´n
+## Configuración
 
-Crea un archivo `.env` basado en `.env.example`:
+Crea el archivo `.env` desde la plantilla y agrega tus credenciales locales:
 
 ```bash
 cp .env.example .env
 ```
 
-Edita `.env` con tus credenciales de PostgreSQL.
-
-## Base de datos
-
-Crea la base de datos en PostgreSQL:
+Crea la base de datos:
 
 ```sql
 CREATE DATABASE modulo7_db;
 ```
 
-Sequelize creará´´ ´automá´´ ´ticamente las tablas `usuarios` y `ordenes` al iniciar el servidor.
+## Datos de prueba
 
-## Ejecució´´´n
+El siguiente comando elimina y vuelve a crear las tablas, luego inserta tres usuarios y cuatro órdenes de ejemplo:
+
+```bash
+npm run seed
+```
+
+## Ejecución
 
 ```bash
 npm run dev
 ```
 
-El servidor correrá´´ ´ en `http://localhost:3000`.
+La API estará disponible en `http://localhost:3000`.
 
 ## Endpoints
 
-| Méé´´todo | Ruta | Descripció´´´n |
-|--------|------|-------------|
-| GET | `/api/usuarios` | Listar usuarios |
-| GET | `/api/usuarios/:id` | Obtener un usuario |
-| POST | `/api/usuarios` | Crear un usuario |
-| PUT | `/api/usuarios/:id` | Actualizar un usuario |
-| DELETE | `/api/usuarios/:id` | Eliminar un usuario |
-| GET | `/api/usuarios/:id/pedidos` | Obtener usuario con sus óó´´´rdenes |
-| POST | `/api/usuarios-con-orden` | Crear usuario y orden con transacció´´´n |
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/usuarios` | Lista usuarios sin contraseñas |
+| GET | `/api/usuarios?nombre=Juan` | Busca usuarios por nombre |
+| GET | `/api/usuarios/:id` | Obtiene un usuario |
+| POST | `/api/usuarios` | Crea un usuario |
+| PUT | `/api/usuarios/:id` | Actualiza nombre o email |
+| DELETE | `/api/usuarios/:id` | Elimina un usuario |
+| GET | `/api/usuarios/:id/pedidos` | Obtiene usuario y sus órdenes |
+| POST | `/api/usuarios-con-orden` | Crea usuario y orden mediante transacción |
 
-## Ejemplo de creació´´´n de usuario
+## Ejemplo: crear usuario
 
 ```json
-POST /api/usuarios
-Content-Type: application/json
-
 {
-  "nombre": "Juan Péé´´rez",
+  "nombre": "Juan Pérez",
   "email": "juan@example.com",
   "password": "123456"
 }
 ```
 
-## Ejemplo de transacció´´´n
+Envía ese contenido a `POST /api/usuarios` con `Content-Type: application/json`.
+
+## Ejemplo: transacción
 
 ```json
-POST /api/usuarios-con-orden
-Content-Type: application/json
-
 {
   "userData": {
-    "nombre": "Marí´´ ´a Gonzá´´ ´lez",
+    "nombre": "María González",
     "email": "maria@example.com",
     "password": "abc123"
   },
@@ -88,10 +87,20 @@ Content-Type: application/json
 }
 ```
 
+Envía ese contenido a `POST /api/usuarios-con-orden`. Si falla la creación de la orden o del usuario, Sequelize ejecuta rollback.
+
+## Características
+
+- Conexión a PostgreSQL mediante Sequelize
+- CRUD de usuarios con validaciones
+- Relación 1:N entre usuarios y órdenes
+- Búsqueda dinámica mediante query params
+- Transacciones con rollback
+- Middleware global de errores
+- Middleware JWT preparado para el Módulo 8
+- Seeders con datos de prueba
+- Arquitectura modular con controladores, servicios, modelos y rutas
+
 ## Autor
 
 Marcel Navarrete Monrroy
-
-## Licencia
-
-MIT

@@ -1,7 +1,18 @@
 import { User, Order, sequelize } from '../models/index.js';
+import { Op } from 'sequelize';
 
 export const getAllUsers = async () => {
   const users = await User.findAll({
+    attributes: { exclude: ['password'] }
+  });
+  return users;
+};
+
+export const searchUsers = async (nombre) => {
+  const users = await User.findAll({
+    where: {
+      nombre: { [Op.iLike]: `%${nombre}%` }
+    },
     attributes: { exclude: ['password'] }
   });
   return users;
@@ -17,10 +28,7 @@ export const getUserById = async (id) => {
   return user;
 };
 
-export const createUser = async (userData) => {
-  const user = await User.create(userData);
-  return user;
-};
+export const createUser = async (userData) => User.create(userData);
 
 export const updateUser = async (id, userData) => {
   const user = await User.findByPk(id);
