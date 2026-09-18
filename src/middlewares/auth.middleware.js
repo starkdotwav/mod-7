@@ -1,25 +1,28 @@
 import jwt from 'jsonwebtoken';
 
-export const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+const JWT_SECRET = process.env.JWT_SECRET || 'modulo7_secret';
 
-  if (!token) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token no proporcionado',
-      data: {}
-    });
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const error = new Error('Token no proporcionado');
+    error.status = 401;
+    return next(error);
   }
+
+  const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key');
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
-    next();
+    return next();
   } catch (error) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token inválido o expirado',
-      data: {}
-    });
+    const authError = new Error('Token inválido o expirado');
+    authError.status = 401;
+    return next(authError);
   }
 };
+
+export { authMiddleware };
+export default authMiddleware;

@@ -89,6 +89,44 @@ Envía ese contenido a `POST /api/usuarios` con `Content-Type: application/json`
 
 Envía ese contenido a `POST /api/usuarios-con-orden`. Si falla la creación de la orden o del usuario, Sequelize ejecuta rollback.
 
+## Autenticación JWT
+
+### Login
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan@example.com",
+  "password": "123456"
+}
+```
+
+Respuesta:
+
+```json
+{
+  "status": "success",
+  "message": "Login exitoso",
+  "data": {
+    "token": "eyJ...",
+    "user": {
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "email": "juan@example.com"
+    }
+  }
+}
+```
+
+### Ruta protegida
+
+```http
+GET /api/usuarios/protegidos
+Authorization: Bearer <token>
+```
+
 ## Características
 
 - Conexión a PostgreSQL mediante Sequelize
@@ -97,7 +135,7 @@ Envía ese contenido a `POST /api/usuarios-con-orden`. Si falla la creación de 
 - Búsqueda dinámica mediante query params
 - Transacciones con rollback
 - Middleware global de errores
-- Middleware JWT preparado para el Módulo 8
+- Autenticación con JWT
 - Seeders con datos de prueba
 - Arquitectura modular con controladores, servicios, modelos y rutas
 

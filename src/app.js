@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import sequelize from './config/database.js';
 import errorMiddleware from './middlewares/error.middleware.js';
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 
 app.get('/', (req, res) => {
@@ -18,7 +20,9 @@ app.get('/', (req, res) => {
     status: 'ok',
     message: 'API Módulo 7 - Node.js + Express + Sequelize',
     endpoints: {
-      usuarios: '/api/usuarios'
+      authLogin: '/api/auth/login',
+      usuarios: '/api/usuarios',
+      usuariosProtegidos: '/api/usuarios/protegidos'
     }
   });
 });

@@ -17,6 +17,22 @@ export const getUsers = async (req, res, next) => {
   }
 };
 
+export const getProtectedUsers = async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.json({
+      status: 'success',
+      message: 'Usuarios protegidos obtenidos correctamente',
+      data: {
+        user: req.user,
+        users
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getUser = async (req, res, next) => {
   try {
     const user = await userService.getUserById(req.params.id);
